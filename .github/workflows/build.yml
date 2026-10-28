@@ -11,37 +11,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build Shared (iOS)
-        run: |
-          xcodebuild build \
-            -project "RouteTrace.xcodeproj" \
-            -scheme "RouteTraceShared" \
-            -configuration Release \
-            -sdk iphoneos \
-            -destination "generic/platform=iOS" \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGN_IDENTITY="-" \
-            -derivedDataPath ./build
-
-      - name: Build Shared (watchOS)
-        run: |
-          xcodebuild build \
-            -project "RouteTrace.xcodeproj" \
-            -scheme "RouteTraceShared" \
-            -configuration Release \
-            -sdk watchos \
-            -destination "generic/platform=watchOS" \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGN_IDENTITY="-" \
-            -derivedDataPath ./build
-
       - name: Build iOS
         run: |
           xcodebuild build \
             -project "RouteTrace.xcodeproj" \
             -scheme "RouteTrace" \
             -configuration Release \
-            -sdk iphoneos \
             -destination "generic/platform=iOS" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY="-" \
@@ -53,7 +28,6 @@ jobs:
             -project "RouteTrace.xcodeproj" \
             -scheme "RouteTraceWatch" \
             -configuration Release \
-            -sdk watchos \
             -destination "generic/platform=watchOS" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY="-" \
