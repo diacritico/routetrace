@@ -11,9 +11,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Elenca scheme
-        run: xcodebuild -list -project "RouteTrace.xcodeproj"
-
       - name: Build iOS
         run: |
           xcodebuild build \
@@ -24,25 +21,25 @@ jobs:
             -destination "generic/platform=iOS" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY="-" \
-            -derivedDataPath ./build-ios
+            -derivedDataPath ./build
 
       - name: Build watchOS
         run: |
           xcodebuild build \
             -project "RouteTrace.xcodeproj" \
-            -scheme "RouteTrace Watch" \
+            -scheme "RouteTrace Watch App" \
             -configuration Release \
             -sdk watchos \
             -destination "generic/platform=watchOS" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY="-" \
-            -derivedDataPath ./build-watch
+            -derivedDataPath ./build
 
       - name: Pacchettizza
         run: |
           mkdir -p output
-          find ./build-ios/Build/Products/Release-iphoneos -name "*.app" -exec cp -R {} output/ \;
-          find ./build-watch/Build/Products/Release-watchos -name "*.app" -exec cp -R {} output/ \;
+          find ./build/Build/Products/Release-iphoneos -name "*.app" -exec cp -R {} output/ \;
+          find ./build/Build/Products/Release-watchos -name "*.app" -exec cp -R {} output/ \;
           cd output && zip -r ../routetrace-build.zip .
 
       - name: Upload artifact
