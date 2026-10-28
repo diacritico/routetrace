@@ -1,0 +1,50 @@
+name: Build RouteTrace
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-26
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build iOS
+        run: |
+          xcodebuild build \
+            -workspace "RouteTrace.xcworkspace" \
+            -scheme "RouteTrace" \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination "generic/platform=iOS" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="-" \
+            -derivedDataPath ./build-ios
+
+      - name: Build watchOS
+        run: |
+          xcodebuild build \
+            -workspace "RouteTrace.xcworkspace" \
+            -scheme "RouteTrace Watch App" \
+            -configuration Release \
+            -sdk watchos \
+            -destination "generic/platform=watchOS" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="-" \
+            -derivedDataPath ./build-watch
+
+      - name: Pacchettizza
+        run: |
+          mkdir -p output
+          find ./build-ios/Build/Products/Release-iphoneos -name "*.app" -exec cp -R {} output/ \;
+          find ./build-watch/Build/Products/Release-watchos -name "*.app" -exec cp -R {} output/ \;
+          cd output && zip -r ../routetrace-build.zip .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: routetrace-build
+          path: routetrace-build.zip
+          retention-days: 7   
